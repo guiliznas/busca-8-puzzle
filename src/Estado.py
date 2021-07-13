@@ -8,8 +8,7 @@ class Estado:
         # O pai do nodo atual
         self.parent = parent
         # Calcular o custo do nodo atual
-        # self.custo = 0 if parent is None else parent.custo + 1
-        self.custo = 1
+        self.custo = 0 if parent is None else parent.custo + 1
         # Calcular a heuristica para o tabuleiro atual
         self.heuristica = self.calcularHeuristica()
         # Calcular a estimativa para o nodo atual
@@ -40,12 +39,8 @@ class Estado:
 
         # Transforma a matriz em uma lista
         lista = [item for sublist in self.matriz for item in sublist]
-        # Remover o 0, que representa a posicao vazia
-        lista = [item for item in lista if item > 0]
 
-        # Ordenar a lista resultante
-        ordenado = lista[:]
-        ordenado.sort()
+        ordenado = Utils.objetivo
 
         # Contar quantos fora de posicao ha
         count = 0
@@ -60,44 +55,31 @@ class Estado:
             Logica um pouco mais avancada, utilizando a Distancia de Manhattan para definir a heuristica
         """
 
-        # TODO: Receber objetivos
-        # TODO: Por enquanto considerando como objetivo o 0 no comeco ou no final
-
-        # Considerar o 0 no comeco
-        count = 0
-        matriz_certa = Utils.lista_para_matriz(list(range(Utils.tamanho*Utils.tamanho)))
+        # Distancia de manhattan
+        matriz_objetivo = Utils.lista_para_matriz(Utils.objetivo)
+        distancia = 0
         for linha in self.matriz:
             for item in linha:
                 if item > 0:
                     posicao_atual = self._buscaValor(item)
-                    posicao_certa = self._buscaValor(item, matriz=matriz_certa)
-                    distancia = abs(posicao_atual[0]-posicao_certa[0]) + abs(posicao_atual[1] - posicao_certa[1])
-                    count += distancia
+                    posicao_certa = self._buscaValor(item, matriz=matriz_objetivo)
+                    distancia = abs(posicao_certa[0]-posicao_atual[0]) + abs(posicao_certa[1]-posicao_atual[1])
+                    distancia += distancia
 
-        # Considerar o 0 no final
-        lista_matriz_2 = list(range(1, Utils.tamanho*Utils.tamanho))
-        lista_matriz_2.append(0)
-        matriz_certa_2 = Utils.lista_para_matriz(lista_matriz_2)
-        count_2 = 0
-        for linha in self.matriz:
-            for item in linha:
-                if item > 0:
-                    posicao_atual = self._buscaValor(item)
-                    posicao_certa = self._buscaValor(item, matriz=matriz_certa_2)
-                    distancia = abs(posicao_atual[0]-posicao_certa[0]) + abs(posicao_atual[1] - posicao_certa[1])
-                    count_2 += distancia
+        # Quantidade de peças fora do lugar
+        qtdPecasTrocadas = self._heuristicaSimples()
 
-        # matriz_certa_3 = [[1,2,3],[8,0,4],[7,6,5]]
+        # Quantidade de inversoes
+        numInversoes = 0
+        lista = [item for sublist in self.matriz for item in sublist]
+        for i in range(len(lista)):
+            for j in range(i+1, len(lista)):
+                if lista[i] > 0 and lista[j]>lista[i]:
+                    numInversoes += 1
 
-        # for linha in self.matriz:
-        #     for item in linha:
-        #         if item > 0:
-        #             posicao_atual = self._buscaValor(item)
-        #             posicao_certa = self._buscaValor(item, matriz=matriz_certa_3)
-        #             distancia = abs(posicao_atual[0]-posicao_certa[0]) + abs(posicao_atual[1] - posicao_certa[1])
-        #             count += distancia
-
-        return min(count, count_2)
+        # return (36*qtdPecasTrocadas) + (18 * count_2) #+ (2*numInversoes)
+        return distancia + numInversoes
+        return distancia
     
     def _buscaValor(self, valor, matriz=None):
         """
@@ -173,20 +155,11 @@ class Estado:
         """
             Verificar se o nodo atual eh o objetivo final.
         """
-
-        # TODO: Verificar outros tipos de objetivos
         
         # Transformar a matriz em lista
         lista = [item for sublist in self.matriz for item in sublist]
 
-        # Remover o valor vazio, ou seja, eh possivel ser uma sequencia com ele no comeco, no final ou em qualquer posicao
-        lista = [item for item in lista if item > 0]
-
-        # Ordenar os valores para comparar e ver se ja estao em ordem
-        ordenado = lista[:]
-        ordenado.sort()
-
-        return lista == ordenado
+        return lista == Utils.objetivo
 
     def comparar(self, nodo):
         """

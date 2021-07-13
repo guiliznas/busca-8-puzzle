@@ -1,6 +1,9 @@
+import time
 import argparse
 from Buscador import Buscador
 from utils import MODO_CUSTO_UNIFORME, MODO_A_SIMPLES, MODO_A_MELHORADO
+
+inicio = time.time()
 
 # Declaracoes dos atributos aceitos
 parser = argparse.ArgumentParser()
@@ -26,9 +29,12 @@ args = parser.parse_args()
 tamanho = args.tamanho
 
 # Pegar estado inicial nos parametros ou gerar
-# estadoInicial = [0,1,2,3,4,5,6,7,8]
 # estadoInicial = [3,1,2,4,7,5,6,8,0]
-estadoInicial = None
+estadoInicial = [1,2,5,3,0,4,6,7,8] # 22
+# estadoInicial = [4,7,5,0,2,1,3,6,8] # 27
+# estadoInicial = [1,2,3,4,5,6,0,7,8] # 3
+# estadoInicial = [2,0,3,1,5,6,4,7,8] # 6
+# estadoInicial = None
 if args.inicial:
     estadoInicial = [int(val) for val in args.inicial.split(',')]
 
@@ -51,4 +57,8 @@ tamanhoCaminho = result.apresentarCaminho()
 print("Expandidos: {}".format(buscador.expandidos))
 print("Criados: {}".format(buscador.criados))
 print("Maximo abertos simultaneamente: {}".format(buscador.max_abertos))
-print("Tamanho do caminho: {}".format(tamanhoCaminho))
+print("Tamanho do caminho (Considerando estado inicial): {}".format(tamanhoCaminho))
+
+final = time.time()
+
+print("Tempo percorrido: {:.2f} segundos".format(final - inicio))

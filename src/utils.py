@@ -5,6 +5,7 @@ MODO_A_MELHORADO = 'a_complexo'
 class Utils:
     tamanho = 3
     modo = MODO_CUSTO_UNIFORME
+    objetivo = []
 
     def lista_para_matriz(lista, tamanho=None):
         if tamanho is None:

@@ -3,7 +3,7 @@ from utils import Utils
 import random
 
 class Buscador:
-    def __init__(self, tamanho=3, estadoInicial=None, modo=None):
+    def __init__(self, tamanho=3, estadoInicial=None, modo=None, objetivo=None):
 
         # Salvar o tamanho do tabuleiro (numero de colunas)
         Utils.tamanho = tamanho
@@ -16,6 +16,11 @@ class Buscador:
             modo = Utils.modo
         self.modo = modo
         print("Modo utilizado: {}".format(self.modo))
+
+        if objetivo is None:
+            objetivo = list(range(1, tamanho*tamanho))
+            objetivo.append(0)
+        Utils.objetivo = objetivo
 
         # Se nao foi informado um estado inicial, ele eh gerado
         if estadoInicial is None:
@@ -59,8 +64,6 @@ class Buscador:
 
         return matriz
 
-
-    # https://pt.stackoverflow.com/questions/333702/como-verificar-se-o-sliding-puzzle-%C3%A9-solucion%C3%A1vel
     def matrizValida(self, matriz):
         """
             Utilizando a formula de Paridade de Permutacao para descobrir se o tabuleiro eh possivel de resolver
@@ -134,7 +137,7 @@ class Buscador:
             else:
                 # Verificar se o estado ja esta aberto
                 if self.estaAberto(estado):
-                    # TODO: Considerar custos menores
+                    self.reporEstadoAberto(estado)
                     pass
                 else:
                     # Para cada estado novo, verifica qual a posicao dele na lista
@@ -143,6 +146,19 @@ class Buscador:
                     self.abertos.insert(pos, estado)
 
         self.max_abertos = max(self.max_abertos, len(self.abertos))
+
+        return
+
+    def reporEstadoAberto(self, estado):
+
+        posicao = -1
+
+        for ind, aberto in enumerate(self.abertos):
+            if estado.comparar(aberto) and estado.custo < aberto.custo:
+                posicao = ind
+
+        if posicao > -1:
+            self.abertos[posicao] = estado
 
         return
 
@@ -165,8 +181,6 @@ class Buscador:
         """
             Verificar se o nodo esta aberto
         """
-
-        # TODO: Verificar se a heuristica eh menor
 
         # Para cada nodo na lista de abertos
         for estado in self.abertos:
