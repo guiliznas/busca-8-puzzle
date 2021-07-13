@@ -1,15 +1,17 @@
-from utils import Utils
+from utils import Utils, MODO_CUSTO_UNIFORME, MODO_A_SIMPLES, MODO_A_MELHORADO
 
 class Estado:
+
     def __init__(self, matriz, parent=None):
         # Matriz para representar o tabuleiro
         self.matriz = matriz
         # O pai do nodo atual
         self.parent = parent
+        # Calcular o custo do nodo atual
+        # self.custo = 0 if parent is None else parent.custo + 1
+        self.custo = 1
         # Calcular a heuristica para o tabuleiro atual
         self.heuristica = self.calcularHeuristica()
-        # Calcular o custo do nodo atual
-        self.custo = 0 if parent is None else parent.custo + 1
         # Calcular a estimativa para o nodo atual
         self.estimativa = self.custo + self.heuristica
         return
@@ -19,9 +21,17 @@ class Estado:
             Calcular a heuristica do nodo atual conforme configuracoes da busca
         """
 
-        # TODO: Considerar tipos diferentes
+        MAP_HEURISTICAS = {
+            MODO_CUSTO_UNIFORME: self._custoUniforme,
+            MODO_A_SIMPLES: self._heuristicaSimples,
+            MODO_A_MELHORADO: self._heuristicaAvancada,
+        }
 
-        return self._heuristicaAvancada()
+        return MAP_HEURISTICAS[Utils.modo]()
+
+    def _custoUniforme(self):
+
+        return self.custo
 
     def _heuristicaSimples(self):
         """
@@ -215,7 +225,7 @@ class Estado:
         for nodo in lista:
             print(nodo)
         print("**"*20)
-        return
+        return len(lista)
 
     def __str__(self):
         return '\n'.join([', '.join([str(val) for val in itens]) for itens in self.matriz]) + '\n' + "Custo: {}\nHeuristica: {}\n".format(self.custo, self.heuristica)

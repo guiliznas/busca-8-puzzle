@@ -9,6 +9,14 @@ class Buscador:
         Utils.tamanho = tamanho
         self.tamanho = tamanho
 
+        # Salvar o metodo de busca
+        if modo:
+            Utils.modo = modo
+        else:
+            modo = Utils.modo
+        self.modo = modo
+        print("Modo utilizado: {}".format(self.modo))
+
         # Se nao foi informado um estado inicial, ele eh gerado
         if estadoInicial is None:
             print("Gerando estado inicial")
@@ -25,11 +33,14 @@ class Buscador:
 
         # Criando o estado pai
         nodo = Estado(matriz=matriz)
-        print("Estado inicial: \n", nodo)
+        print("Estado inicial: \n{}".format(nodo))
 
         # Iniciando as variaveis auxiliares
         self.visitados = []
         self.abertos = [nodo]
+        self.expandidos = 0
+        self.criados = 0
+        self.max_abertos = 0
 
         return
 
@@ -85,6 +96,7 @@ class Buscador:
 
             # Pega o primeiro nodo da lista de abertos
             nodo = self.abertos.pop(0)
+            self.criados += 1
 
             # Ja adiciona nos nodos visitados
             self.visitados.append(nodo)
@@ -111,6 +123,9 @@ class Buscador:
             Inserir na lista ordenada de nodos abertos
         """
 
+        # Adicionar contagem nos nodos expandidos
+        self.expandidos += len(estados)
+
         # Para cada estado recebido
         for estado in estados:
             # Verificar se o estado ja foi visitado
@@ -126,6 +141,9 @@ class Buscador:
                     pos = self.__pegarPosicao(estado=estado)
                     # Inserir o nodo na lista de abertos
                     self.abertos.insert(pos, estado)
+
+        self.max_abertos = max(self.max_abertos, len(self.abertos))
+
         return
 
     def __pegarPosicao(self, estado=None):
