@@ -1,109 +1,172 @@
 from Estado import Estado
+from utils import Utils
 import random
 
 class Buscador:
     def __init__(self, tamanho=3, estadoInicial=None, modo=None):
 
+        # Salvar o tamanho do tabuleiro (numero de colunas)
+        Utils.tamanho = tamanho
         self.tamanho = tamanho
+
+        # Se nao foi informado um estado inicial, ele eh gerado
         if estadoInicial is None:
             print("Gerando estado inicial")
+            # Gerar uma lista de numeros
             estadoInicial = list(range(tamanho*tamanho))
+            # Embaralhar a lista de numeros
             random.shuffle(estadoInicial)
 
-        matriz = []
-        while(len(estadoInicial) > 0):
-            matriz.append(estadoInicial[:tamanho])
-            estadoInicial = estadoInicial[tamanho:]
+        # Formatando a lista para uma matriz
+        matriz = Utils.lista_para_matriz(estadoInicial)
 
+        # Verificando se a matriz eh valida, se nao for gera-se outra
+        matriz = self.gerarMatrizValida(matriz)
+
+        # Criando o estado pai
         nodo = Estado(matriz=matriz)
-        print(nodo)
+        print("Estado inicial: \n", nodo)
 
+        # Iniciando as variaveis auxiliares
         self.visitados = []
         self.abertos = [nodo]
 
         return
 
-    def iniciarBusca(self):
+    def gerarMatrizValida(self, matriz):
+        """
+            Gerar matrizes ate retornar uma valida
+        """
+
+        while self.matrizValida(matriz) is False:
+            tamanho = self.tamanho
+            lista = list(range(tamanho*tamanho))
+            random.shuffle(lista)
+            matriz = Utils.lista_para_matriz(lista)
+
+        print("Matriz válida: {}".format(matriz))
+
+        return matriz
+
+
+    # https://pt.stackoverflow.com/questions/333702/como-verificar-se-o-sliding-puzzle-%C3%A9-solucion%C3%A1vel
+    def matrizValida(self, matriz):
+        """
+            Utilizando a formula de Paridade de Permutacao para descobrir se o tabuleiro eh possivel de resolver
+        """
+    
+        # Retornando a matriz para uma lista
+        lista = [item for sublist in matriz for item in sublist]
 
         count = 0
-        while count < 100:
-            count += 1
-            # loop
+        # Para cada valor, contar quantos valores que estao depois dele deveriam estar antes.
+        for i in range(len(lista)):
+            for j in range(i+1, len(lista)):
+                if lista[i] > 0 and lista[j]>lista[i]:
+                    count += 1
+
+        return (count % 2 == 0)
+
+    def iniciarBusca(self):
+        """
+            Metodo principal para rodar a busca
+        """
+
+        # Se nao for uma matriz valida, parar execucao
+        if not self.matrizValida(self.abertos[0].matriz):
+            print("Impossível solucionar")
+            return
+
+        # Loop geral da busca
+        while True:
+            # Se nao tem mais nodos abertos, algo deu errado
             if len(self.abertos) == 0:
                 return None
-            # pega o primeiro nodo da lista de abertos
+
+            # Pega o primeiro nodo da lista de abertos
             nodo = self.abertos.pop(0)
-            print("Testando:\n{}".format(nodo))
-            # adiciona nos visitados
+
+            # Ja adiciona nos nodos visitados
             self.visitados.append(nodo)
-            # verifica se  eh objetivo
+
+            # Verificar se eh um objetivo
             ehObjetivo = nodo.ehObjetivo()
-            # print("Eh objetivo: {}".format(ehObjetivo))
+
+            # Se for objetivo, retorna o nodo
             if ehObjetivo:
+                print("Encontrou resposta")
                 return nodo
-            # Se nao for, joga ele para os visitados
-            # Pega os filhos dele e adiciona nos abertos
+
+            # Se nao for objetivo
+            # Pega os filhos do nodo em analise
             filhos = nodo.filhos(tamanho=self.tamanho)
-            # print("{} filhos".format(len(filhos)))
+
+            # Se tiver filhos
             if len(filhos) > 0:
+                # Inserir os filhos na lista de nodos abertos
                 self._inserirNodoAberto(estados=filhos)
 
-            #   Verificacoes para inserir nos abertos
-            # Quando encontrar o objetivo para o loop
-            # Retorna resultados
-
-        print("\n\n\nabertos\n")
-        for aberto in self.abertos[5:]:
-            print(aberto)
-        print("\nabertos\n\n\n")
-
-        return nodo
-
     def _inserirNodoAberto(self, estados=[]):
+        """
+            Inserir na lista ordenada de nodos abertos
+        """
 
+        # Para cada estado recebido
         for estado in estados:
+            # Verificar se o estado ja foi visitado
             if self.estaVisitado(estado):
-                # print("Ja foi visitado")
                 pass
             else:
+                # Verificar se o estado ja esta aberto
                 if self.estaAberto(estado):
-                    # print("Ja esta aberto")
+                    # TODO: Considerar custos menores
                     pass
                 else:
-                    print(estado)
+                    # Para cada estado novo, verifica qual a posicao dele na lista
                     pos = self.__pegarPosicao(estado=estado)
+                    # Inserir o nodo na lista de abertos
                     self.abertos.insert(pos, estado)
-
         return
 
     def __pegarPosicao(self, estado=None):
+        """
+            Buscar a posicao do nodo na lista de nodos abertos conforme estimativa (custo + heuristica)
+        """
 
+        # Para cada nodo na lista de abertos
         for ind, nodo in enumerate(self.abertos):
-            # print(nodo.heuristica, estado.heuristica)
-            if nodo.heuristica > estado.heuristica:
-                # print("Nodo: {} - Estado: {}".format(nodo.heuristica, estado.heuristica))
+            # Verifica se a estimativa do nodo eh maior que do estado sendo adicionado
+            if nodo.estimativa > estado.estimativa:
+                # Retornar a posicao que estava sendo verificada
                 return ind
 
+        # Caso nao foi encontrado uma posicao para inserir, retorna o tamanho da lista para inserir no final
         return len(self.abertos)
 
     def estaAberto(self, node):
-        # Verificar se a heuristica eh menor
+        """
+            Verificar se o nodo esta aberto
+        """
 
+        # TODO: Verificar se a heuristica eh menor
+
+        # Para cada nodo na lista de abertos
         for estado in self.abertos:
+            # Comparar com o estado atual
             if node.comparar(estado):
                 return True
 
         return False
 
     def estaVisitado(self, node):
+        """
+            Verificar se o nodo ja foi visitado
+        """
 
+        # Para cada nodo na lista de visitados
         for estado in self.visitados:
+            # Comparar com o estado atual
             if node.comparar(estado):
                 return True
 
         return False
-
-    def apresentarNodos(self, nodos):
-        for item in nodos:
-            print(item.matriz)
-        return
