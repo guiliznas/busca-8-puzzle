@@ -17,6 +17,8 @@ class Buscador:
         self.modo = modo
         print("Modo utilizado: {}".format(self.modo))
 
+        self.objetivo_informado = objetivo
+
         if objetivo is not None:
             if isinstance(objetivo, str):
                 objetivo = [int(val) for val in objetivo.split(',')]
@@ -79,8 +81,8 @@ class Buscador:
         """
             Utilizando a formula de Paridade de Permutacao para descobrir se o tabuleiro eh possivel de resolver
         """
-    
-        if self.tamanho != 3:
+
+        if self.objetivo_informado:
             return True
 
         # Retornando a matriz para uma lista
@@ -128,7 +130,7 @@ class Buscador:
 
             # Se nao for objetivo
             # Pega os filhos do nodo em analise
-            filhos = nodo.filhos(tamanho=self.tamanho)
+            filhos = nodo.filhos()
 
             # Se tiver filhos
             if len(filhos) > 0:

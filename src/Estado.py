@@ -99,14 +99,13 @@ class Estado:
 
         return vazio
 
-    def filhos(self, tamanho=None):
+    def filhos(self):
         """
             Busca dos filhos de cada nodo.
             Considerando que soh eh possivel ter 4 filhos no maximo, uma para cada direcao.
         """
 
-        if tamanho is None:
-            tamanho = Utils.tamanho
+        tamanho = Utils.tamanho
 
         valor_vazio = 0
         filhos = []

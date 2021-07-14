@@ -42,6 +42,8 @@ Ao finalizar a busca, será apresentado:
 - O tamanho total do caminho percorrido para chegar na conclusão;
 - Tempo decorrido na busca;
 
+------
+
 ## Simulações
 
 Para testar o algoritmo de busca, rodamos as seguintes simulações:
@@ -55,27 +57,3 @@ Para testar o algoritmo de busca, rodamos as seguintes simulações:
 | A* Heurística completa | 1,2,5,3,0,4,6,7,8 | 22             | 3886             | 3.20s           |
 | A* Heurística completa | 7,5,3,4,1,8,2,0,6 | 25             | 12536            | 32,87s          |
 | A* Heurística completa | 4,7,5,0,2,1,3,6,8 | 27             | 16715            | 67,88s          |
-
-------
-
-
-Relatório:
-- Descrição das heurísticas e simulações de seus valores
-  - Breve descrição da implementação
-- Como foi gerenciada a fronteira, verificações, quais estapas foram feitas ao adicionar um estado (explicar estratégia, respectivos métodos e possibilidades além do que foi implementado)
-- Métodos principais e breve descriçãod o fluxo do algoritmo
-- Se não alcançou algum objetivo, explicar o que faria VS o que foi feito. Qual problema encontrado e limitações da implementação
-
-Informar referenciais teóricos/práticos.
-
-Para avaliação:
-- Utilizar uma estrutura de dados e busca adequada
-- Implementar heurística matematicamente
-- Considera todo o trabalho realizado, não só a saída
-
-Considerar apenas a solução possível padrão, com o espaço vazio na ultima casa (3:3).
-
-
-Adicionais:
-- Os algoritmos precisam funcionar para qualquer objetivo.
-- Necessário montar a estrutura toda de forma genérica (ex: n-puzzle, ser possível executar 15-puzzle).
