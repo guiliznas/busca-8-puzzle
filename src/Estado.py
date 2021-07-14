@@ -1,4 +1,4 @@
-from utils import Utils, MODO_CUSTO_UNIFORME, MODO_A_SIMPLES, MODO_A_MELHORADO
+from utils import Utils, MODO_CUSTO_UNIFORME, MODO_A_SIMPLES, MODO_A_MELHORADO, MODO_A_INVERSOES
 
 class Estado:
 
@@ -24,12 +24,12 @@ class Estado:
             MODO_CUSTO_UNIFORME: self._custoUniforme,
             MODO_A_SIMPLES: self._heuristicaSimples,
             MODO_A_MELHORADO: self._heuristicaAvancada,
+            MODO_A_INVERSOES: self._heuristicaInversoes
         }
 
         return MAP_HEURISTICAS[Utils.modo]()
 
     def _custoUniforme(self):
-
         return self.custo
 
     def _heuristicaSimples(self):
@@ -50,19 +50,33 @@ class Estado:
 
         return count
 
+    def _heuristicaInversoes(self):
+        """
+            Logica mediana, considerando a quantidade de inversoes necessarias.
+        """
+
+        lista = [item for sublist in self.matriz for item in sublist]
+
+        numInversoes = 0
+        for i in range(len(lista)):
+            for j in range(i+1, len(lista)):
+                if lista[i] > 0 and lista[j]>lista[i]:
+                    numInversoes += 1
+
+        return numInversoes
+
     def _heuristicaAvancada(self):
         """
             Logica um pouco mais avancada, utilizando a Distancia de Manhattan para definir a heuristica
         """
 
-        # Distancia de manhattan
-        matriz_objetivo = Utils.lista_para_matriz(Utils.objetivo)
+        # Calcular Distancia de manhattan
         distancia = 0
         for linha in self.matriz:
             for item in linha:
                 if item > 0:
                     posicao_atual = self._buscaValor(item)
-                    posicao_certa = self._buscaValor(item, matriz=matriz_objetivo)
+                    posicao_certa = Utils.dic_map_valores[item]
                     distancia += abs(posicao_certa[0]-posicao_atual[0]) + abs(posicao_certa[1]-posicao_atual[1])
 
         return distancia
@@ -98,10 +112,7 @@ class Estado:
         filhos = []
 
         # Encontra a posicao do valor vazio
-        vazio = [(index, row.index(valor_vazio)) for index, row in enumerate(self.matriz) if valor_vazio in row]
-        if len(vazio) == 0:
-            return None
-        vazio = vazio[0]
+        vazio = self._buscaValor(valor_vazio, matriz=self.matriz)
 
         # Tentar movimentar para cima
         if vazio[0] - 1 > -1:
@@ -141,23 +152,13 @@ class Estado:
         """
             Verificar se o nodo atual eh o objetivo final.
         """
-        
-        # Transformar a matriz em lista
-        lista = [item for sublist in self.matriz for item in sublist]
-
-        return lista == Utils.objetivo
+        return self.matriz == Utils.objetivo_matriz
 
     def comparar(self, nodo):
         """
             Comparacao entre dois nodos.
         """
-
-        # Transformar a primeira matriz em uma lista
-        lista = [item for sublist in self.matriz for item in sublist]
-        # Transformar a segunda matriz em uma lista
-        lista_nodo = [item for sublist in nodo.matriz for item in sublist]
-
-        return lista == lista_nodo
+        return nodo.matriz == self.matriz
     
     def apresentarCaminho(self):
         """
@@ -184,7 +185,7 @@ class Estado:
         for nodo in lista:
             print(nodo)
         print("**"*20)
-        return len(lista)
+        return len(lista) - 1
 
     def __str__(self):
-        return '\n'.join([', '.join([str(val) for val in itens]) for itens in self.matriz]) + '\n' + "Custo: {}\nHeuristica: {}\n".format(self.custo, self.heuristica)
+        return '\n'.join([' '.join([str(val) if val != 0 else '_' for val in itens]) for itens in self.matriz]) + '\n' + "Custo: {}\nHeuristica: {}\n".format(self.custo, self.heuristica)

@@ -27,6 +27,8 @@ class Buscador:
             objetivo = list(range(1, tamanho*tamanho))
             objetivo.append(0)
         Utils.objetivo = objetivo
+        Utils.objetivo_matriz = Utils.lista_para_matriz(objetivo)
+        Utils.preencher_map_coordenadas_objetivo()
 
         # Se nao foi informado um estado inicial, ele eh gerado
         if estadoInicial is None:
@@ -60,6 +62,9 @@ class Buscador:
             Gerar matrizes ate retornar uma valida
         """
 
+        if not self.matrizValida(matriz):
+            print("Matriz inválida")
+
         while self.matrizValida(matriz) is False:
             tamanho = self.tamanho
             lista = list(range(tamanho*tamanho))
@@ -75,6 +80,9 @@ class Buscador:
             Utilizando a formula de Paridade de Permutacao para descobrir se o tabuleiro eh possivel de resolver
         """
     
+        if self.tamanho != 3:
+            return True
+
         # Retornando a matriz para uma lista
         lista = [item for sublist in matriz for item in sublist]
 
@@ -156,12 +164,17 @@ class Buscador:
         return
 
     def reporEstadoAberto(self, estado):
+        """
+            Caso o nodo exista um nodo aberto com o mesmo tabuleiro mas custo maior,
+            troca pelo estado recebido.
+        """
 
         posicao = -1
 
         for ind, aberto in enumerate(self.abertos):
             if estado.comparar(aberto) and estado.custo < aberto.custo:
                 posicao = ind
+                break
 
         if posicao > -1:
             self.abertos[posicao] = estado
