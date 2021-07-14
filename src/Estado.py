@@ -63,22 +63,8 @@ class Estado:
                 if item > 0:
                     posicao_atual = self._buscaValor(item)
                     posicao_certa = self._buscaValor(item, matriz=matriz_objetivo)
-                    distancia = abs(posicao_certa[0]-posicao_atual[0]) + abs(posicao_certa[1]-posicao_atual[1])
-                    distancia += distancia
+                    distancia += abs(posicao_certa[0]-posicao_atual[0]) + abs(posicao_certa[1]-posicao_atual[1])
 
-        # Quantidade de peças fora do lugar
-        qtdPecasTrocadas = self._heuristicaSimples()
-
-        # Quantidade de inversoes
-        numInversoes = 0
-        lista = [item for sublist in self.matriz for item in sublist]
-        for i in range(len(lista)):
-            for j in range(i+1, len(lista)):
-                if lista[i] > 0 and lista[j]>lista[i]:
-                    numInversoes += 1
-
-        # return (36*qtdPecasTrocadas) + (18 * count_2) #+ (2*numInversoes)
-        return distancia + numInversoes
         return distancia
     
     def _buscaValor(self, valor, matriz=None):

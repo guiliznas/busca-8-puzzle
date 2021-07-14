@@ -30,8 +30,8 @@ tamanho = args.tamanho
 
 # Pegar estado inicial nos parametros ou gerar
 # estadoInicial = [3,1,2,4,7,5,6,8,0]
-estadoInicial = [1,2,5,3,0,4,6,7,8] # 22
-# estadoInicial = [4,7,5,0,2,1,3,6,8] # 27
+estadoInicial = [1,2,5,3,0,4,6,7,8] # 22 - 17s
+# estadoInicial = [4,7,5,0,2,1,3,6,8] # 27 - 339.7s
 # estadoInicial = [1,2,3,4,5,6,0,7,8] # 3
 # estadoInicial = [2,0,3,1,5,6,4,7,8] # 6
 # estadoInicial = None
