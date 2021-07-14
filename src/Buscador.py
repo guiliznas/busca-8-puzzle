@@ -17,6 +17,12 @@ class Buscador:
         self.modo = modo
         print("Modo utilizado: {}".format(self.modo))
 
+        if objetivo is not None:
+            if isinstance(objetivo, str):
+                objetivo = [int(val) for val in objetivo.split(',')]
+            if len(objetivo) != tamanho*tamanho:
+                print("Objetivo nao tem o tamanho adequado")
+                objetivo = None
         if objetivo is None:
             objetivo = list(range(1, tamanho*tamanho))
             objetivo.append(0)

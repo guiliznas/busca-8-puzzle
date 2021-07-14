@@ -23,20 +23,27 @@ parser.add_argument(
     "--inicial",
     help="Lista para indicar o estado inicial.\nConsiderar a ordem de leitura natural, com os numeros separados por virgula.\nEx: 1,2,3,4,5,6,7,8,0 para o resultado padrao.",
 )
+parser.add_argument(
+    "--objetivo",
+    help="Lista para indicar o estado objetivo.\nConsiderar a ordem de leitura natural, com os numeros separados por virgula.\nEx: 1,2,3,4,5,6,7,8,0 para o resultado padrao.",
+)
 args = parser.parse_args()
 
 # Pegar tamanho do tabuleiro nos parametros
 tamanho = args.tamanho
 
-# Pegar estado inicial nos parametros ou gerar
+# Pegar estado inicial nos parametros
 # estadoInicial = [3,1,2,4,7,5,6,8,0]
 estadoInicial = [1,2,5,3,0,4,6,7,8] # 22 - 17s
 # estadoInicial = [4,7,5,0,2,1,3,6,8] # 27 - 339.7s
 # estadoInicial = [1,2,3,4,5,6,0,7,8] # 3
-# estadoInicial = [2,0,3,1,5,6,4,7,8] # 6
+estadoInicial = [2,0,3,1,5,6,4,7,8] # 6
 # estadoInicial = None
 if args.inicial:
     estadoInicial = [int(val) for val in args.inicial.split(',')]
+
+# Pegar o objetivo nos parametros
+objetivo = args.objetivo
 
 # Pegar modo de busca nos parametros
 modo = args.modo or MODO_A_MELHORADO
@@ -44,7 +51,8 @@ modo = args.modo or MODO_A_MELHORADO
 buscador = Buscador(
     tamanho=tamanho,
     estadoInicial=estadoInicial,
-    modo=modo
+    modo=modo,
+    objetivo=objetivo,
 )
 print("\nInicio do jogo\n\n")
 # Rodar busca

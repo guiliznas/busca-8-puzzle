@@ -10,7 +10,11 @@ python3.6 src
 Parâmetros válidos:
 - modo: O modo de busca (custo_uniforme, a_simples, a_complexo);
 - tamanho: Qual a dimensão do tabuleiro (Ex: se for 3x3, passar 3);
-- inicial: Caso queira passar um estado inicial para a busca, informar a lista de valores, sendo 0 a casa vazia (Ex: 1,2,3,4,5,6,7,8,0). Caso vazio, será gerado um novo estado aleatório;
+- inicial: Caso queira passar um estado inicial para a busca, informar a lista de valores, sendo 0 a casa vazia (Ex: 1,2,3,4,5,6,7,8,0). Caso vazio, 
+será gerado um novo estado aleatório;
+- objetivo: Caso queira passar um estado objetivo, informat a lista de valores, sendo 0 a casa vazia (Ex: 1,2,3,4,5,6,7,8,0). Caso vazio,
+será usado o objetivo padrão com a casa vazia no final;
+
 Para mais informações é possível verificar a ajuda
 ```
 python3.6 src --help
